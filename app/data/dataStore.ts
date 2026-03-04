@@ -13,6 +13,7 @@ export interface User {
   user_points: number;
   user_lists: ListItem[];       // Now an array of objects
   user_goals: string[];
+  user_preference:string;
 }
 
 export interface Item {
@@ -91,6 +92,29 @@ export async function getGroceryPlanById(id: string): Promise<{ data: GroceryPla
     .from('grocery_history')
     .select('*')
     .eq('id', id)
+    .single();
+  return { data, error };
+}
+
+export interface UserPreference {
+  user_id: string;
+  user_preference:string;
+}
+
+// Update user personalization to Supabase
+export async function updateUserPreference({ userId, userPreference}: {
+  userId: string;
+  userPreference:string;
+}): Promise<{ data: User | null; error: Error | null }> {
+  const { data, error } = await supabase
+    .from('user_data')
+    .update(
+      {
+        user_preference: userPreference
+      }
+    )
+    .eq('user_id', userId)
+    .select()
     .single();
   return { data, error };
 }
